@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survei Penilaian Catering</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-3xl">🍽️</span>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Penilaian Catering</h1>
+            <p class="text-gray-600">Bagaimana pengalaman Anda dengan layanan catering kami hari ini?</p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="space-y-4 mb-6">
+            <button onclick="submitFeedback('puas')" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3">
+                <span class="text-2xl">😊</span>
+                <span class="text-lg">PUAS</span>
+            </button>
+            
+            <button onclick="submitFeedback('tidak_puas')" class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3">
+                <span class="text-2xl">😞</span>
+                <span class="text-lg">TIDAK PUAS</span>
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <p class="text-sm text-gray-500">Terima kasih atas waktu Anda!</p>
+        
+
+    <!-- Thank You Modal -->
+    <div id="thankYouModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center transform transition-all duration-300">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-3xl">✅</span>
+            </div>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Terima Kasih!</h2>
+            <p id="feedbackMessage" class="text-gray-600 mb-6"></p>
+            <button onclick="closeModal()" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div id="instructionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden overflow-y-auto">
+        <div class="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">📋 Panduan Setup Google Sheets</h2>
+                <button onclick="closeInstructions()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            
+            <div class="space-y-6 text-left">
+                <!-- Step 1 -->
+                <div class="border-l-4 border-blue-500 pl-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">1️⃣ Buat Google Apps Script</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Buka <span class="bg-gray-100 px-2 py-1 rounded">script.google.com</span></li>
+                        <li>• Klik "New Project"</li>
+                        <li>• Hapus kode default dan paste kode berikut:</li>
+                    </ul>
+                    <div class="bg-gray-100 p-3 rounded mt-2 text-xs font-mono overflow-x-auto">
+function doPost(e) {<br>
+&nbsp;&nbsp;const sheet = SpreadsheetApp.openById('SHEET_ID').getActiveSheet();<br>
+&nbsp;&nbsp;const data = JSON.parse(e.postData.contents);<br>
+&nbsp;&nbsp;sheet.appendRow([data.timestamp, data.rating, data.date, data.time]);<br>
+&nbsp;&nbsp;return ContentService.createTextOutput('Success');<br>
+}
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="border-l-4 border-green-500 pl-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">2️⃣ Buat Google Sheets</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Buka <span class="bg-gray-100 px-2 py-1 rounded">sheets.google.com</span></li>
+                        <li>• Buat spreadsheet baru</li>
+                        <li>• Buat header di baris 1: Timestamp | Rating | Tanggal | Waktu</li>
+                        <li>• Copy ID dari URL (bagian setelah /d/ dan sebelum /edit)</li>
+                    </ul>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="border-l-4 border-orange-500 pl-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">3️⃣ Hubungkan Script ke Sheets</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Kembali ke Apps Script</li>
+                        <li>• Ganti 'SHEET_ID' dengan ID spreadsheet Anda</li>
+                        <li>• Klik "Deploy" → "New Deployment"</li>
+                        <li>• Pilih type "Web app"</li>
+                        <li>• Execute as: Me, Access: Anyone</li>
+                        <li>• Copy URL deployment</li>
+                    </ul>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="border-l-4 border-purple-500 pl-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">4️⃣ Update Kode Survei</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Ganti 'PASTE_YOUR_DEPLOYMENT_URL_HERE' dengan URL deployment</li>
+                        <li>• Simpan dan test survei Anda!</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <button onclick="closeInstructions()" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200">
+                    Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL Google Apps Script untuk menyimpan data ke Google Sheets
+        // GANTI 'PASTE_YOUR_DEPLOYMENT_URL_HERE' dengan URL deployment Anda
+        // Contoh: 'https://script.google.com/macros/s/AKfycbx12345.../exec'
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxTU-dP4yE71HN9A6E3Urki57htx-zU8V01Chc9RKx7x1F2UwqRlKpjGas77LJph9UhuQ/exec';
+        
+        function submitFeedback(rating) {
+            const modal = document.getElementById('thankYouModal');
+            const message = document.getElementById('feedbackMessage');
+            
+            // Siapkan data untuk dikirim ke Google Sheets
+            const feedbackData = {
+                timestamp: new Date().toLocaleString('id-ID'),
+                rating: rating === 'puas' ? 'Puas' : 'Tidak Puas',
+                date: new Date().toLocaleDateString('id-ID'),
+                time: new Date().toLocaleTimeString('id-ID')
+            };
+            
+            // Kirim data ke Google Sheets
+            saveToGoogleSheets(feedbackData);
+            
+            if (rating === 'puas') {
+                message.textContent = 'Senang mendengar Anda puas dengan layanan catering kami! Data telah tersimpan di spreadsheet.';
+            } else {
+                message.textContent = 'Terima kasih atas masukan Anda. Data telah tersimpan dan kami akan berusaha meningkatkan kualitas layanan.';
+            }
+            
+            modal.classList.remove('hidden');
+            
+            // Log untuk debugging
+            console.log('Feedback diterima:', feedbackData);
+        }
+        
+        function saveToGoogleSheets(data) {
+            // Dalam implementasi nyata, ganti dengan URL Google Apps Script Anda
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(() => {
+                console.log('Data berhasil dikirim ke Google Sheets');
+            })
+            .catch((error) => {
+                console.log('Error mengirim data:', error);
+                // Data tetap tersimpan secara lokal sebagai backup
+                saveToLocalStorage(data);
+            });
+        }
+        
+        function saveToLocalStorage(data) {
+            // Simpan sebagai backup di browser
+            let existingData = JSON.parse(localStorage.getItem('cateringSurvey') || '[]');
+            existingData.push(data);
+            localStorage.setItem('cateringSurvey', JSON.stringify(existingData));
+            console.log('Data tersimpan di local storage sebagai backup');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('thankYouModal');
+            modal.classList.add('hidden');
+        }
+
+        function showInstructions() {
+            const modal = document.getElementById('instructionsModal');
+            modal.classList.remove('hidden');
+        }
+
+        function closeInstructions() {
+            const modal = document.getElementById('instructionsModal');
+            modal.classList.add('hidden');
+        }
+
+        // Tutup modal jika diklik di luar area modal
+        document.getElementById('thankYouModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('instructionsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeInstructions();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'979b895b841691b3',t:'MTc1Njk2ODQ1Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
