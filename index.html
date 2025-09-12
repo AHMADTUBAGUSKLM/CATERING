@@ -70,15 +70,14 @@
   </div>
 
   <script>
+    // GANTI URL INI dengan URL Deployment Google Apps Script Anda
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxTU-dP4yE71HN9A6E3Urki57htx-zU8V01Chc9RKx7x1F2UwqRlKpjGas77LJph9UhuQ/exec';
     let pendingFeedback = null;
 
     function submitFeedback(rating) {
       if (rating === 'puas') {
-        // langsung kirim
         sendFeedback({ rating: 'Puas' });
       } else {
-        // simpan sementara & tampilkan modal alasan
         pendingFeedback = { rating: 'Tidak Puas' };
         document.getElementById('reasonModal').classList.remove('hidden');
       }
